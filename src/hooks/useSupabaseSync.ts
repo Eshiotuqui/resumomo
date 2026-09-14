@@ -19,10 +19,11 @@ export function useSupabaseSync() {
 
   useEffect(() => {
     if (!isSupabaseEnabled || !supabase) return;
+    const client = supabase;
 
     // 1. Load initial data from Supabase
     const loadInitial = async () => {
-      const { data } = await supabase
+      const { data } = await client
         .from(TABLE)
         .select('*')
         .eq('id', ROW_ID)
@@ -45,7 +46,7 @@ export function useSupabaseSync() {
       } else {
         // Create the row if it doesn't exist
         const { sections, pages, deskPostIts } = useNotebookStore.getState();
-        await supabase.from(TABLE).upsert({
+        await client.from(TABLE).upsert({
           id: ROW_ID,
           sections,
           pages,
@@ -58,7 +59,7 @@ export function useSupabaseSync() {
     loadInitial();
 
     // 2. Listen for real-time changes from other devices
-    const channel = supabase
+    const channel = client
       .channel('notebook-sync')
       .on(
         'postgres_changes',
@@ -93,7 +94,7 @@ export function useSupabaseSync() {
 
     // 3. Push local changes to Supabase (debounced)
     const pushToSupabase = debounce(() => {
-      if (isRemoteUpdate.current || !supabase) return;
+      if (isRemoteUpdate.current) return;
 
       const { sections, pages, deskPostIts } = useNotebookStore.getState();
       const localJson = JSON.stringify({ sections, pages, deskPostIts });
@@ -101,7 +102,7 @@ export function useSupabaseSync() {
       if (localJson === lastSavedJson.current) return;
       lastSavedJson.current = localJson;
 
-      supabase
+      client
         .from(TABLE)
         .upsert({
           id: ROW_ID,

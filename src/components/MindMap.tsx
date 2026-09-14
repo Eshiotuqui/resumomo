@@ -280,7 +280,6 @@ export default function MindMap() {
                       if (!from || !to) return null;
 
                       const dx = to.x - from.x;
-                      const dy = to.y - from.y;
                       const cx1 = from.x + dx * 0.4;
                       const cy1 = from.y;
                       const cx2 = from.x + dx * 0.6;
