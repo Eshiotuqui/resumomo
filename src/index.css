@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Patrick+Hand&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Patrick Hand', cursive, system-ui;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+.font-handwriting {
+  font-family: 'Patrick Hand', cursive;
+}
+
+.font-lettering {
+  font-family: 'Dancing Script', cursive;
+}
+
+.font-caveat {
+  font-family: 'Caveat', cursive;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+/* Page lines */
+.lines-dark .page-lines {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    #999 31px,
+    #999 32px
+  );
+}
+
+.lines-light .page-lines {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    #ddd 31px,
+    #ddd 32px
+  );
+}
+
+.lines-dots .page-lines {
+  background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.lines-none .page-lines {
+  background-image: none;
+}
+
+/* Notebook shadow */
+.notebook-shadow {
+  box-shadow:
+    0 0 40px rgba(0,0,0,0.3),
+    inset 0 0 80px rgba(0,0,0,0.05);
+}
+
+/* Post-it styles */
+.postit-shadow {
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+}
+
+/* Spiral binding */
+.spiral-ring {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #666;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #999, #ccc);
+}
