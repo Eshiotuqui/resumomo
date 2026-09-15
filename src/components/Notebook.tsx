@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNotebookStore } from '../store/useNotebookStore';
 import NotebookPage from './NotebookPage';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { exportNotebookToPdf, exportScreenToPdf } from '../lib/exportPdf';
 
 interface NotebookProps {
   onClose: () => void;
@@ -10,12 +12,34 @@ interface NotebookProps {
 export default function Notebook({ onClose }: NotebookProps) {
   const {
     currentPageIndex, isFlipping, flipDirection,
-    getFilteredPages, addPage,
+    getFilteredPages, addPage, pages, sections, deskPostIts,
     activeSectionId, toggleSidebar, setShowSummary,
     setCurrentPageIndex, setFlipping,
   } = useNotebookStore();
 
   const isMobile = useIsMobile();
+  const [exporting, setExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
+
+  const handleExportFull = async () => {
+    setExporting(true);
+    setShowExportMenu(false);
+    try {
+      exportNotebookToPdf(pages, sections, deskPostIts);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleExportScreen = async () => {
+    setExporting(true);
+    setShowExportMenu(false);
+    try {
+      await exportScreenToPdf();
+    } finally {
+      setExporting(false);
+    }
+  };
   const filteredPages = getFilteredPages();
 
   // Mobile: 1 page at a time. Desktop: 2-page spread.
@@ -80,6 +104,44 @@ export default function Notebook({ onClose }: NotebookProps) {
         >
           Resumo
         </button>
+
+        {/* Export PDF dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            disabled={exporting}
+            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-500/70 backdrop-blur-sm text-white rounded-xl hover:bg-emerald-600/70 transition-colors text-xs sm:text-sm font-medium disabled:opacity-50"
+          >
+            {exporting ? 'Exportando...' : 'PDF'}
+          </button>
+          <AnimatePresence>
+            {showExportMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                className="absolute top-full mt-1 right-0 bg-white rounded-xl shadow-xl overflow-hidden z-50 min-w-[180px]"
+              >
+                <button
+                  onClick={handleExportFull}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-b border-gray-100"
+                >
+                  <span className="font-medium">Caderno completo</span>
+                  <br />
+                  <span className="text-xs text-gray-400">Todas as paginas + post-its</span>
+                </button>
+                <button
+                  onClick={handleExportScreen}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-medium">Screenshot da tela</span>
+                  <br />
+                  <span className="text-xs text-gray-400">Captura exata da tela atual</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       {/* Notebook container */}
