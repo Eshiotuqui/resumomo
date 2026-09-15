@@ -10,7 +10,7 @@ import { useNotebookStore } from './store/useNotebookStore';
 import { useSupabaseSync } from './hooks/useSupabaseSync';
 
 export default function App() {
-  useSupabaseSync();
+  const syncStatus = useSupabaseSync();
   const [isOpen, setIsOpen] = useState(false);
   const { deskPostIts, addDeskPostIt, removeDeskPostIt, updateDeskPostIt } = useNotebookStore();
 
@@ -91,7 +91,7 @@ export default function App() {
       <MindMap />
 
       {/* Sync status indicator */}
-      <SyncStatus />
+      <SyncStatus status={syncStatus} />
     </div>
   );
 }
